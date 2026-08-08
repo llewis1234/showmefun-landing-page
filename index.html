@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>showmefun.xyz</title>
+<meta name="description" content="A quiet corner of the internet, somewhere in Missouri.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap">
+<link rel="stylesheet" href="styles.css">
+<style>
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-body);
+    overflow: hidden;
+  }
+  .stage {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background:
+      radial-gradient(120% 90% at 50% 45%, #1c1e30 0%, var(--color-bg) 62%);
+  }
+  .stage::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(120% 100% at 50% 50%, transparent 55%, rgba(10,11,18,.55) 100%);
+  }
+  svg.map { width: min(94vw, 132vh); height: auto; display: block; overflow: visible; }
+
+  .outline {
+    fill: color-mix(in srgb, var(--color-accent-900) 55%, transparent);
+    stroke: var(--color-accent-800);
+    stroke-width: 1.1;
+    stroke-linejoin: round;
+    stroke-dasharray: var(--L) var(--L);
+    stroke-dashoffset: var(--L);
+    animation: draw 2.6s cubic-bezier(.22,.61,.36,1) .2s forwards;
+  }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+
+  .trail, .head {
+    fill: none;
+    stroke-linecap: round;
+    opacity: 0;
+    animation: run 34s linear infinite, fade 1.2s ease-out 2.4s forwards;
+  }
+  .trail {
+    stroke: var(--color-accent-600);
+    stroke-width: 1.8;
+    stroke-dasharray: 150 var(--Lgap150);
+  }
+  .head {
+    stroke: var(--color-accent-200);
+    stroke-width: 2.4;
+    stroke-dasharray: 14 var(--Lgap14);
+    filter: drop-shadow(0 0 6px var(--color-accent)) drop-shadow(0 0 16px var(--color-accent-600));
+  }
+  @keyframes run { to { stroke-dashoffset: calc(-1 * var(--L)); } }
+  @keyframes fade { to { opacity: 1; } }
+
+  .pt { cursor: default; }
+  .pt .hit { fill: transparent; }
+  .pt .dot {
+    fill: var(--color-accent-300);
+    opacity: .55;
+    transition: opacity .35s ease, r .35s ease;
+  }
+  .pt .halo {
+    fill: none;
+    stroke: var(--color-accent-500);
+    stroke-width: .9;
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: opacity .35s ease;
+  }
+  .pt .cap {
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: .04em;
+    fill: var(--color-accent-200);
+    opacity: 0;
+    transition: opacity .3s ease;
+    pointer-events: none;
+  }
+  .pt .cap .yr { fill: var(--color-accent-500); font-size: 9.5px; letter-spacing: .12em; }
+  .pt:hover .dot, .pt:focus-within .dot { opacity: 1; }
+  .pt:hover .halo, .pt:focus-within .halo { opacity: .8; animation: ping 1.6s ease-out infinite; }
+  .pt:hover .cap, .pt:focus-within .cap { opacity: 1; }
+  .pt:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+  @keyframes ping {
+    0%   { transform: scale(.5); opacity: .85; }
+    100% { transform: scale(1.9); opacity: 0; }
+  }
+
+  .chrome {
+    position: fixed;
+    inset: 0;
+    padding: clamp(20px, 4vw, 44px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    pointer-events: none;
+  }
+  .mark {
+    font-family: var(--font-heading);
+    font-size: clamp(15px, 1.5vw, 19px);
+    font-weight: 500;
+    letter-spacing: .01em;
+    margin: 0;
+  }
+  .sub {
+    margin: 6px 0 0;
+    font-size: 12px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--color-text) 42%, transparent);
+  }
+  .foot { display: flex; align-items: baseline; gap: 14px; }
+  .foot a {
+    pointer-events: auto;
+    font-size: 12px;
+    letter-spacing: .05em;
+    color: color-mix(in srgb, var(--color-text) 55%, transparent);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: color .25s ease, border-color .25s ease;
+  }
+  .foot a:hover { color: var(--color-accent-300); border-bottom-color: var(--color-accent-600); }
+  .foot a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; border-radius: 2px; }
+  .foot span {
+    font-size: 12px;
+    letter-spacing: .05em;
+    color: color-mix(in srgb, var(--color-text) 28%, transparent);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .outline, .trail, .head, .pt:hover .halo { animation: none; }
+    .outline { stroke-dashoffset: 0; }
+    .trail, .head { opacity: 1; }
+  }
+</style>
+</head>
+<body>
+<div class="stage">
+  <svg class="map" viewBox="0 0 900 560" role="img" aria-label="Outline of the state of Missouri">
+    <path id="mo" class="outline" d=""></path>
+    <path class="trail" d=""></path>
+    <path class="head" d=""></path>
+    <g id="points"></g>
+  </svg>
+</div>
+
+<div class="chrome">
+  <div>
+    <h1 class="mark">showmefun.xyz</h1>
+    <p class="sub">Missouri &middot; 37.0&deg;N to 40.6&deg;N</p>
+  </div>
+  <div class="foot">
+    <a href="https://github.com/llewis1234" rel="me noopener">github.com/llewis1234</a>
+    <span>Let the welfare of the people be the supreme law</span>
+  </div>
+</div>
+
+<script>
+(function () {
+  var D = "M178.5,43.043L227.358,43.873L273.876,44.611L319.516,44.334L357.55,43.597L375.689,43.597L433.324,42.49L477.794,41.291L507.343,40L510.853,43.504L511.146,46.546L516.412,47.836L516.12,51.153L520.801,56.4L523.726,56.584L524.019,61.736L527.237,64.586L532.796,65.23L530.455,66.884L525.482,80.105L524.897,86.615L526.652,101.721L530.748,110.77L532.796,113.327L530.455,119.351L531.918,122.817L536.307,125.917L537.477,128.469L536.599,134.025L544.206,141.033L548.594,146.216L551.813,147.488L554.738,153.757L558.542,154.483L561.76,161.38L566.441,166.277L583.702,178.686L589.553,186.827L590.431,194.958L592.772,201.998L590.138,205.245L593.357,212.906L594.234,218.759L600.671,224.967L603.889,224.337L607.107,221.459L609.74,215.518L615.299,215.158L623.198,219.209L627.879,219.659L638.997,227.035L638.412,232.428L634.901,235.033L631.098,240.33L634.023,248.583L633.438,251.899L627.002,260.497L625.246,269.353L620.273,275.43L618.225,280.074L617.932,287.034L619.395,293.275L624.661,297.73L630.512,305.652L637.827,308.944L641.045,313.745L643.385,313.745L648.359,319.076L653.04,318.454L653.918,320.852L650.407,322.982L652.162,327.42L658.014,327.863L660.939,325.113L664.742,327.597L665.035,330.169L669.424,331.234L676.153,337.438L675.567,340.982L679.663,341.247L682.296,344.966L687.855,347.09L687.855,352.132L691.073,358.143L687.27,358.85L687.855,363.266L695.462,377.47L694.292,382.933L689.903,383.99L687.563,388.92L692.536,393.583L692.244,397.716L696.047,405.36L699.265,409.399L698.973,414.05L705.994,418.96L708.92,416.593L704.531,412.646L708.627,411.593L713.601,416.505L715.941,421.152L719.16,419.925L721.793,421.765L720.33,429.649L718.574,433.675L715.649,434.462L715.356,437.786L720.33,441.021L719.452,443.469L714.771,443.207L713.601,447.051L716.819,452.116L714.478,454.647L712.431,460.841L708.627,462.41L703.361,455.607L699.558,456.741L695.754,469.12L693.414,472.604L689.61,471.994L690.196,469.294L691.951,465.984L690.488,461.713L684.344,461.538L683.174,464.153L685.807,469.207L687.563,471.123L685.515,476.695L688.44,481.827L686.977,485.044L679.956,485.131L679.956,488.347L686.1,491.735L686.392,494.08L682.004,495.382L673.227,493.993L672.349,495.816L680.541,502.238L680.834,507.527L674.397,510.994L673.519,517.49L670.009,519.481L617.64,520L622.321,510.474L629.05,505.447L629.05,503.452L633.438,498.854L638.119,496.424L638.997,492.691L641.63,492.083L643.093,480.523L636.656,476.695L637.534,475.389L636.071,469.207L533.966,469.294L439.468,469.207L398.216,469.207L333.267,469.12L271.828,469.033L271.828,418.259L271.828,393.583L272.121,385.046L272.121,316.144L272.413,311.522L272.413,249.389L272.706,238.625L272.706,198.659L274.169,194.958L268.317,194.687L266.854,191.887L264.221,193.332L260.126,192.339L258.663,189.538L254.274,188.363L255.152,185.832L249.886,181.129L248.13,173.979L250.763,171.714L249.301,169.812L245.205,169.812L241.694,164.283L237.013,161.471L236.72,158.84L232.332,155.119L232.039,150.759L237.013,148.579L236.428,144.852L238.476,141.124L242.864,139.395L244.327,132.568L248.13,134.753L251.056,134.207L251.349,129.744L247.838,131.202L246.96,127.922L249.593,127.831L250.763,124.003L247.545,123L245.497,119.99L246.668,117.435L239.646,116.248L237.305,119.99L229.699,118.712L228.236,115.427L224.433,115.975L224.14,112.049L220.337,111.044L215.656,105.561L206.586,100.441L208.927,93.211L201.905,86.249L201.32,79.188L195.469,77.445L195.761,74.508L190.495,72.121L186.984,62.012L187.277,58.425L184.059,55.296L183.766,51.613L187.569,47.744L184.351,46.085L184.059,49.126L178.207,48.85Z";
+
+  var PTS = [
+    { x: 253.3, y: 130.3, n: "St. Joseph",   y2: 1843, a: "end",    dx: -10, dy: 4 },
+    { x: 275.2, y: 200.8, n: "Kansas City",  y2: 1838, a: "end",    dx: -10, dy: 4 },
+    { x: 288.5, y: 201.7, n: "Independence", y2: 1827, a: "start",  dx: 11,  dy: -7 },
+    { x: 291.2, y: 220.6, n: "Lee's Summit", y2: 1865, a: "start",  dx: 11,  dy: 11 },
+    { x: 458.1, y: 216.3, n: "Columbia",     y2: 1821, a: "middle", dx: 0,   dy: -14 },
+    { x: 380.0, y: 396.8, n: "Springfield",  y2: 1829, a: "middle", dx: 0,   dy: -14 },
+    { x: 588.9, y: 231.1, n: "O'Fallon",     y2: 1856, a: "middle", dx: 0,   dy: -34 },
+    { x: 597.0, y: 233.5, n: "St. Peters",   y2: 1868, a: "middle", dx: 0,   dy: -22 },
+    { x: 607.8, y: 233.4, n: "St. Charles",  y2: 1769, a: "start",  dx: 12,  dy: -6 },
+    { x: 632.1, y: 250.3, n: "St. Louis",    y2: 1764, a: "start",  dx: 12,  dy: 5 }
+  ];
+
+  var paths = document.querySelectorAll("svg.map path");
+  for (var i = 0; i < paths.length; i++) paths[i].setAttribute("d", D);
+
+  var L = document.getElementById("mo").getTotalLength();
+  var root = document.documentElement;
+  root.style.setProperty("--L", L);
+  root.style.setProperty("--Lgap150", L - 150);
+  root.style.setProperty("--Lgap14", L - 14);
+
+  var NS = "http://www.w3.org/2000/svg";
+  var g = document.getElementById("points");
+  PTS.forEach(function (p) {
+    var grp = document.createElementNS(NS, "g");
+    grp.setAttribute("class", "pt");
+    grp.setAttribute("tabindex", "0");
+
+    var halo = document.createElementNS(NS, "circle");
+    halo.setAttribute("class", "halo");
+    halo.setAttribute("cx", p.x); halo.setAttribute("cy", p.y); halo.setAttribute("r", 9);
+
+    var dot = document.createElementNS(NS, "circle");
+    dot.setAttribute("class", "dot");
+    dot.setAttribute("cx", p.x); dot.setAttribute("cy", p.y); dot.setAttribute("r", 2.6);
+
+    var cap = document.createElementNS(NS, "text");
+    cap.setAttribute("class", "cap");
+    cap.setAttribute("x", p.x + p.dx);
+    cap.setAttribute("y", p.y + p.dy);
+    cap.setAttribute("text-anchor", p.a);
+    cap.appendChild(document.createTextNode(p.n));
+    var yr = document.createElementNS(NS, "tspan");
+    yr.setAttribute("class", "yr");
+    yr.setAttribute("x", p.x + p.dx);
+    yr.setAttribute("dy", 13);
+    yr.textContent = "ESTD. " + p.y2;
+    cap.appendChild(yr);
+
+    var hit = document.createElementNS(NS, "circle");
+    hit.setAttribute("class", "hit");
+    hit.setAttribute("cx", p.x); hit.setAttribute("cy", p.y); hit.setAttribute("r", 10);
+
+    grp.appendChild(halo); grp.appendChild(dot); grp.appendChild(cap); grp.appendChild(hit);
+    var front = function () { g.appendChild(grp); };
+    grp.addEventListener("mouseenter", front);
+    grp.addEventListener("focus", front);
+    g.appendChild(grp);
+  });
+})();
+</script>
+</body>
+</html>
