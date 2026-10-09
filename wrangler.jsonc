@@ -1,0 +1,15 @@
+{
+  // showmefun.xyz: static landing page + QA webhook endpoint (/qa-hook/*)
+  "name": "showmefun-landing-page",
+  "main": "src/qa-hook-worker.js",
+  "compatibility_date": "2026-09-01",
+  "assets": {
+    "directory": ".",
+    "binding": "ASSETS",
+    "run_worker_first": ["/qa-hook/*"]
+  },
+  "kv_namespaces": [
+    { "binding": "QA_HOOK_KV", "id": "dfb3584956a6485783d3a06ab61f63e9" }
+  ],
+  "observability": { "enabled": true }
+}
